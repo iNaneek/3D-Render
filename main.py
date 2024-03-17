@@ -232,12 +232,16 @@ cubes4[7].colors = ((20, 250, 20), (50, 150, 50), (20, 250, 20), (50, 150, 50), 
 cubes4[8].colors = ((20, 20, 250), (50, 50, 150), (20, 20, 250), (50, 50, 150), (0, 0, 255), (0, 0, 100))
 cubes4[9].colors = ((200, 200, 0), (170, 170, 0), (200, 200, 0), (170, 170, 0), (255, 255, 0), (150, 150, 0))
 
-speed = [10, 10, 10, 10]
+slowdownTrigger = [False, False, False, False]
+speed = [12, 12, 12, 12]
 pos = [0, 0, 0, 0]
 x = 0
+
+y = random.randint(0, 9)
+
 running = True
 while running:
-    #pygame.time.delay(2)  # time between frames (in ms)
+    pygame.time.delay(20)  # time between frames (in ms)
     for event in pygame.event.get():  # when close button pushed, loop ends
         if event.type == pygame.QUIT:
             running = False
@@ -248,35 +252,63 @@ while running:
 
     pygame.draw.circle(win, (255, 0, 0), (500, 500), 3)
 
-    speed[0] -= 1
-    speed[1] -= 0.6
-    speed[2] -= 0.3
-    speed[3] -= 0.1
 
-    pos[0] += speed[0]
-    pos[1] += speed[1]
-    pos[2] += speed[2]
-    pos[3] += speed[3]
 
-    x += 0.5
+    if pos[0] % 360 == y * 36:
+        pos[0] += 6
+        slowdownTrigger[0] = True
+
+    if pos[1] % 360 == (180 + y * 36) % 360:
+        pos[1] += 6
+        slowdownTrigger[1] = True
+
+    if pos[2] % 360 == (240 + y * 36) % 360:
+        pos[2] += 6
+        slowdownTrigger[2] = True
+
+    if pos[3] % 360 == y * 36:
+        pos[3] += 6
+        slowdownTrigger[3] = True
+
+
+    if slowdownTrigger[0]:
+        speed[0] -= 0.1
+    if slowdownTrigger[1]:
+        speed[1] -= 0.08
+    if slowdownTrigger[2]:
+        speed[2] -= 0.06
+    if slowdownTrigger[3]:
+        speed[3] -= 0.04
+
+    if speed[0] > 0: pos[0] += speed[0]
+    if speed[1] > 0: pos[1] += speed[1]
+    if speed[2] > 0: pos[2] += speed[2]
+    if speed[3] > 0: pos[3] += speed[3]
+
+
+    x += 1
     print(x)
     if x == 10000:
         print(time.time()-t1)
         pass
 
     if keys[pygame.K_a]:
+        slowdownTrigger[0] = True
         for index in cubes1:
             cubes1[index].move(0)
 
     if keys[pygame.K_d]:
+        slowdownTrigger[1] = True
         for index in cubes1:
             cubes1[index].move(1)
 
     if keys[pygame.K_s]:
+        slowdownTrigger[2] = True
         for index in cubes1:
             cubes1[index].move(2)
 
     if keys[pygame.K_w]:
+        slowdownTrigger[3] = True
         for index in cubes1:
             cubes1[index].move(3)
 
@@ -300,38 +332,40 @@ while running:
     cubes1 = dict(sorted(cubes1.items(), key=lambda item: item[1].pos[1], reverse=True))
 
     for indx in cubes1:
-        cubes1[indx].pos = [4.5, math.cos(indx * math.pi/5 + x/30)*5+15, math.sin(indx * math.pi/5 + x/30)*5]
+        cubes1[indx].pos = [-4.5, math.cos(indx * math.pi/5 + pos[0] * 0.0174533)*5+15, math.sin(indx * math.pi/5 + pos[0] * 0.0174533)*5]
         cubes1[indx].find_points()
         cubes1[indx].find_side_positions()
         cubes1[indx].draw_sides()
         #cubes[index].move(6)
+
+    cubes4 = dict(sorted(cubes4.items(), key=lambda item: item[1].pos[1], reverse=True))
+
+    for indx in cubes4:
+        cubes4[indx].pos = [4.5, math.cos(indx * math.pi/5 + pos[3] * 0.0174533)*5+15, math.sin(indx * math.pi/5 + pos[3] * 0.0174533)*5]
+        cubes4[indx].find_points()
+        cubes4[indx].find_side_positions()
+        cubes4[indx].draw_sides()
+        #cubes[index].move(6)
     
-    cubes2 = dict(sorted(cubes1.items(), key=lambda item: item[1].pos[1], reverse=True))
+    cubes2 = dict(sorted(cubes2.items(), key=lambda item: item[1].pos[1], reverse=True))
 
     for indx in cubes2:
-        cubes2[indx].pos = [-4.5, math.cos(indx * math.pi/5 + x/30)*5+15, math.sin(indx * math.pi/5 + x/30)*5]
+        cubes2[indx].pos = [-1.5, math.cos(indx * math.pi/5 + pos[1] * 0.0174533)*5+15, math.sin(indx * math.pi/5 + pos[1] * 0.0174533)*5]
         cubes2[indx].find_points()
         cubes2[indx].find_side_positions()
         cubes2[indx].draw_sides()
         #cubes[index].move(6)
     
-    cubes3 = dict(sorted(cubes1.items(), key=lambda item: item[1].pos[1], reverse=True))
+    cubes3 = dict(sorted(cubes3.items(), key=lambda item: item[1].pos[1], reverse=True))
 
     for indx in cubes3:
-        cubes3[indx].pos = [1.5, math.cos(indx * math.pi/5 + x/30)*5+15, math.sin(indx * math.pi/5 + x/30)*5]
+        cubes3[indx].pos = [1.5, math.cos(indx * math.pi/5 + pos[2] * 0.0174533)*5+15, math.sin(indx * math.pi/5 + pos[2] * 0.0174533)*5]
         cubes3[indx].find_points()
         cubes3[indx].find_side_positions()
         cubes3[indx].draw_sides()
         #cubes[index].move(6)
     
-    cubes4 = dict(sorted(cubes1.items(), key=lambda item: item[1].pos[1], reverse=True))
 
-    for indx in cubes4:
-        cubes4[indx].pos = [-1.5, math.cos(indx * math.pi/5 + x/30)*5+15, math.sin(indx * math.pi/5 + x/30)*5]
-        cubes4[indx].find_points()
-        cubes4[indx].find_side_positions()
-        cubes4[indx].draw_sides()
-        #cubes[index].move(6)
 
     pygame.display.update()
 pygame.quit()  # when the loop ends it closes the window
