@@ -365,7 +365,7 @@ while running:
         cubes3[indx].draw_sides()
         #cubes[index].move(6)
     
-
+ #
 
     pygame.display.update()
 pygame.quit()  # when the loop ends it closes the window
